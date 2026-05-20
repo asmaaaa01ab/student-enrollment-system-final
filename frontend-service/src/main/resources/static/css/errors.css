@@ -1,0 +1,119 @@
+@charset "UTF-8";
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #6B8F71;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+}
+
+.error-box {
+    background: white;
+    border-radius: 20px;
+    padding: 50px 40px;
+    text-align: center;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    transition: transform 0.3s ease;
+}
+
+.error-box:hover {
+    transform: translateY(-5px);
+}
+
+.oups {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #a0aec0;
+    margin-bottom: 20px;
+}
+
+/* 404 code style */
+.error-code {
+    font-size: 120px;
+    font-weight: 800;
+    background: #4E6B53;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    line-height: 1;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 15px;
+}
+
+.message {
+    color: #718096;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+    margin: 25px 0;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-outline-secondary {
+    background: transparent;
+    color: #4E6B53;
+    border: 2px solid #4E6B53;
+}
+
+.btn-outline-secondary:hover {
+    background: #4E6B53;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+@media (max-width: 480px) {
+    .error-box {
+        padding: 35px 25px;
+    }
+    
+    .error-code {
+        font-size: 80px;
+    }
+    
+    h2 {
+        font-size: 22px;
+    }
+    
+    .message {
+        font-size: 14px;
+    }
+}

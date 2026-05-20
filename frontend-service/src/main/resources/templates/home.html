@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SES – Courses</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/home.css}">
+    <script th:inline="javascript">
+	    /*<![CDATA[*/
+	    const GATEWAY_URL  = /*[[${@environment.getProperty('gateway.url')}]]*/ 'http://localhost:8080';
+	    const STUDENT_CNIE = /*[[${studentCnie}]]*/ '';
+	    /*]]>*/
+	</script>
+</head>
+<body>
+<nav class="navbar">
+    <div class="nav-brand">
+        <div class="brand-text">
+            <span class="brand-abbr">SES</span>
+            <span class="brand-full">Student Enrollment System</span>
+        </div>
+    </div>
+    <div class="nav-actions">
+        <div class="avatar" id="avatarMenu" title="My Account">
+            <span th:text="${studentInitials ?: 'AA'}">AA</span>
+            <div class="avatar-dropdown">
+                <span class="avatar-cnie" th:text="${studentCnie}">CNIE</span>
+                <a th:href="@{/login}" class="dropdown-item logout-btn">Logout</a>
+            </div>
+        </div>
+    </div>
+</nav>
+<header class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">We help you find<br><em>courses</em> to study</h1>
+        <form class="search-bar" th:action="@{/home}" method="get" id="searchForm">
+            <input
+                type="text"
+                name="keyword"
+                id="searchInput"
+                placeholder="Search a course"
+                autocomplete="off"
+                th:value="${keyword}"
+            />
+            <button type="submit" class="search-btn" aria-label="Search">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+            </button>
+        </form>
+    </div>
+    
+</header>
+<section class="cnie-section">
+    <form class="cnie-form" id="cnieForm">
+        <label for="cnieInput" class="cnie-label">Enter your CNIE</label>
+        <div class="cnie-input-row">
+            <input
+                type="text"
+                id="cnieInput"
+                placeholder="Enter your CNIE (e.g. CD2387)"
+                pattern="^[A-Za-z]{1,2}[0-9]{4,6}$"
+                th:value="${studentCnie}"
+            />
+            <button type="submit" class="btn-cnie">Search</button>
+        </div>
+    </form>
+</section>
+<main class="content-area">
+    <div class="content-columns">
+        <section class="col-courses">
+            <div class="section-header">
+                <h2 class="section-title">List of courses</h2>
+                <div class="tab-bar">
+                    <button class="tab active" data-tab="all">All courses</button>
+                </div>
+            </div>
+            <div id="coursesList" class="courses-grid">
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+            </div>
+            <div id="coursesEmpty" class="empty-state" style="display:none">
+                <p>No courses found.</p>
+            </div>
+        </section>
+        <section class="col-enrolled">
+            <div class="section-header">
+                <h2 class="section-title">My Enrollments</h2>
+            </div>
+            <div id="enrolledList" class="enrolled-list">
+                <div class="enrolled-placeholder">
+                    <p>Enter your CNIE to view your enrollments.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<!-- ── Modal 1: Confirm enrollment ─────────────────────────────────────── -->
+<div id="enrollModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Confirm Enrollment</h3>
+            <span id="modalClose" class="modal-close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p>You are about to enroll in:</p>
+            <h4 id="modalCourseTitle"></h4>
+            <p id="modalCourseDesc"></p>
+            <div class="modal-meta">
+                <span id="modalCredits"></span>
+            </div>
+            <div class="form-group">
+                <label>CNIE:</label>
+                <div class="cnie-readonly" id="modalCnieDisplay">—</div>
+            </div>
+            <div id="modalFeedback" class="modal-feedback"></div>
+        </div>
+        <div class="modal-footer">
+            <button id="modalCancelBtn" class="btn-secondary">Cancel</button>
+            <button id="modalEnrollBtn" class="btn-primary">Confirm Enrollment</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Modal 2: Course is full ─────────────────────────────────────────── -->
+<div id="courseFullModal" class="modal" style="display: none;">
+    <div class="modal-content modal-content--warning">
+        <div class="modal-header">
+            <h3 class="modal-title--warning">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Course Full
+            </h3>
+            <span id="courseFullClose" class="modal-close">&times;</span>
+        </div>
+        <div class="modal-body modal-body--centered">
+            <div class="modal-icon modal-icon--warning">🚫</div>
+            <p class="modal-main-msg">Sorry, <strong id="courseFullCourseName"></strong> is currently full.</p>
+            <p class="modal-sub-msg">This course has reached its maximum enrollment of 3 students. Please check back later or choose another course.</p>
+        </div>
+        <div class="modal-footer modal-footer--centered">
+            <button id="courseFullOkBtn" class="btn-primary">Got it</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Modal 3: Confirm delete (within 24h) ────────────────────────────── -->
+<div id="deleteConfirmModal" class="modal" style="display: none;">
+    <div class="modal-content modal-content--danger">
+        <div class="modal-header">
+            <h3>Unenroll from course?</h3>
+            <span id="deleteConfirmClose" class="modal-close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to unenroll from <strong id="deleteConfirmCourseName"></strong>?</p>
+            <div class="modal-countdown-box">
+                <span class="modal-countdown-label">⏳ Time left to unenroll:</span>
+                <span class="modal-countdown-timer" id="deleteConfirmTimeLeft">—</span>
+            </div>
+            <p class="modal-sub-msg">After this window closes you will no longer be able to unenroll.</p>
+        </div>
+        <div class="modal-footer">
+            <button id="deleteConfirmCancelBtn" class="btn-secondary">Cancel</button>
+            <button id="deleteConfirmOkBtn" class="btn-danger">Yes, unenroll</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Modal 4: Delete expired (past 24h) ─────────────────────────────── -->
+<div id="deleteExpiredModal" class="modal" style="display: none;">
+    <div class="modal-content modal-content--danger">
+        <div class="modal-header">
+            <h3 class="modal-title--danger">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Cannot Unenroll
+            </h3>
+            <span id="deleteExpiredClose" class="modal-close">&times;</span>
+        </div>
+        <div class="modal-body modal-body--centered">
+            <div class="modal-icon modal-icon--danger">⛔</div>
+            <p class="modal-main-msg">You can't unenroll from <strong id="deleteExpiredCourseName"></strong>.</p>
+            <p class="modal-sub-msg">The 24-hour cancellation window has passed. Unenrollment is no longer possible for this course.</p>
+        </div>
+        <div class="modal-footer modal-footer--centered">
+            <button id="deleteExpiredOkBtn" class="btn-secondary">OK</button>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/home.js}"></script>
+</body>
+</html>

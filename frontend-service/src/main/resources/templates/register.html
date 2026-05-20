@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SES – Inscription</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body class="auth-body">
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="brand">
+            <div class="brand-text">
+                <span class="brand-abbr">SES</span>
+                <span class="brand-full">Student Enrollment System</span>
+            </div>
+        </div>
+        <div class="auth-headline">
+            <h1>Create<br>your account</h1>
+        </div>
+        <form class="auth-form" id="registerForm">
+            <div class="input-group">
+                <input type="text" name="firstName" placeholder="First Name" required autocomplete="given-name" />
+            </div>
+            <div class="input-group">
+                <input type="text" name="lastName" placeholder="Last Name" required autocomplete="family-name" />
+            </div>
+            <div class="input-group">
+                <input type="text" name="cnie" placeholder="CNIE (ex: AB12345)" required />
+            </div>
+            <div class="input-group">
+                <input type="email" name="email" placeholder="Email address" required autocomplete="email" />
+            </div>
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Password (min. 8 chars)" required autocomplete="new-password" />
+            </div>
+            <div class="input-group">
+                <input type="password" name="confirmPassword" placeholder="Confirm Password" required autocomplete="new-password" />
+            </div>
+            <button type="submit" class="btn-primary">Register</button>
+        </form>
+        <p class="auth-switch">Already have an account?<a th:href="@{/login}" class="link-accent">Login</a></p>
+    </div>
+</div>
+<script th:src="@{/js/auth.js}"></script>
+</body>
+</html>
